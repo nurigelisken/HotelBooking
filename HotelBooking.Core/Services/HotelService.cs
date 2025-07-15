@@ -1,64 +1,93 @@
-﻿using HotelBooking.Infrastructure.Entities;
+﻿using Azure.Core.Pipeline;
+using HotelBooking.Core.Dto;
+using HotelBooking.Core.Dto.Response;
 using HotelBooking.Core.Repositories.Interfaces;
 using HotelBooking.Core.Services.Interfaces;
-using HotelBooking.Core.Dto;
-using Azure.Core.Pipeline;
-using HotelBooking.Core.Dto.Response;
+using HotelBooking.Infrastructure.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace HotelBooking.Core.Services
 {
     public class HotelService : IHotelService
     {
         private readonly IHotelRepository _hotelRepository;
-        public HotelService(IHotelRepository hotelRepository)
+        private readonly ILogger<BookingService> _logger;
+
+        public HotelService(IHotelRepository hotelRepository, ILogger<BookingService> logger)
         {
             _hotelRepository = hotelRepository;
+            _logger = logger;
         }
 
         public async Task<ServiceResponse<HotelResponse>> GetAsync(int id)
         {
-            var hotelEntity = await _hotelRepository.GetAsync(id);
-            if (hotelEntity == null)
+            try
             {
+                var hotelEntity = await _hotelRepository.GetAsync(id);
+                if (hotelEntity == null)
+                {
+                    return new ServiceResponse<HotelResponse>
+                    {
+                        Success = false,
+                        Message = "Hotel not found"
+                    };
+                }
+
+                var hotelDto = new HotelResponse { Id = id, Name = hotelEntity.Name };
                 return new ServiceResponse<HotelResponse>
                 {
-                    Success = false,
-                    Message = "Hotel not found"
+                    Data = hotelDto
                 };
             }
-
-            var hotelDto = new HotelResponse { Id = id, Name = hotelEntity.Name };
-            return new ServiceResponse<HotelResponse>
+            catch (Exception ex)
             {
-                Data = hotelDto
-            };
+                _logger.LogError($"Error at Service : {nameof(HotelService)} {nameof(HotelService.GetAsync)} /n Message: {ex.Message}");
+                return new ServiceResponse<HotelResponse>(new List<string> { ex.Message });
+            }
         }
 
         public async Task<int> SaveAsync(string name)
         {
-            var hotelEntity = new Hotel { Name = name };
-            return await _hotelRepository.SaveAsync(hotelEntity);
+            try
+            {
+                var hotelEntity = new Hotel { Name = name };
+                return await _hotelRepository.SaveAsync(hotelEntity);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error at Service : {nameof(HotelService)} {nameof(HotelService.GetAsync)} /n Message: {ex.Message}");
+                return 0;
+            }
         }
 
         public async Task<ServiceResponse<IEnumerable<HotelResponse>>> SearchAsync(string query)
         {
-            var hotelEntities = await _hotelRepository.SearchAsync(query);
-            var hotels = hotelEntities.Select(entity => new HotelResponse
+            try
             {
-                Id = entity.Id,
-                Name = entity.Name,
-                HotelRooms = entity.HotelRooms.Select(hotelRoom => new HotelRoomResponse
+                var hotelEntities = await _hotelRepository.SearchAsync(query);
+                var hotels = hotelEntities.Select(entity => new HotelResponse
                 {
-                    Id = hotelRoom.Id,
-                    Quantity = hotelRoom.Quantity,
-                    RoomName = hotelRoom.Room.Name
-                }).ToList(),
-            });
+                    Id = entity.Id,
+                    Name = entity.Name,
+                    HotelRooms = entity.HotelRooms.Select(hotelRoom => new HotelRoomResponse
+                    {
+                        Id = hotelRoom.Id,
+                        Quantity = hotelRoom.Quantity,
+                        RoomName = hotelRoom.Room.Name
+                    }).ToList(),
+                });
 
-            return new ServiceResponse<IEnumerable<HotelResponse>>
+                return new ServiceResponse<IEnumerable<HotelResponse>>
+                {
+                    Data = hotels
+                };
+            }
+            catch (Exception ex)
             {
-                Data = hotels
-            };
+                _logger.LogError($"Error at Service : {nameof(HotelService)} {nameof(HotelService.SearchAsync)} /n Message: {ex.Message}");
+                return new ServiceResponse<IEnumerable<HotelResponse>>(new List<string> { ex.Message });
+            }
         }
     }
 }

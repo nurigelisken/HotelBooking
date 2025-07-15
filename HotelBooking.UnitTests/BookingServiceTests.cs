@@ -3,6 +3,7 @@ using HotelBooking.Core.Dto.Request;
 using HotelBooking.Core.Repositories.Interfaces;
 using HotelBooking.Core.Services;
 using HotelBooking.Infrastructure.Entities;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace HotelBooking.UnitTests
@@ -12,6 +13,7 @@ namespace HotelBooking.UnitTests
         private readonly Mock<IBookingRepository> _bookingRepositoryMock;
         private readonly Mock<IHotelRepository> _hotelRepositoryMock;
         private readonly Mock<IRoomRepository> _roomRepositoryMock;
+        private readonly Mock<ILogger<BookingService>> _loggerMock;
         private readonly BookingService _bookingService;
 
         public BookingServiceTests()
@@ -19,8 +21,8 @@ namespace HotelBooking.UnitTests
             _bookingRepositoryMock = new Mock<IBookingRepository>();
             _hotelRepositoryMock = new Mock<IHotelRepository>();
             _roomRepositoryMock = new Mock<IRoomRepository>();
-
-            _bookingService = new BookingService(_bookingRepositoryMock.Object, _roomRepositoryMock.Object, _hotelRepositoryMock.Object);
+            _loggerMock = new Mock<ILogger<BookingService>>();
+            _bookingService = new BookingService(_bookingRepositoryMock.Object, _roomRepositoryMock.Object, _hotelRepositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]
