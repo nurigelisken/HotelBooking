@@ -32,3 +32,8 @@ It provides functionality to search for hotels, list available rooms, and make b
 	- POST /api/admin/seed   → Seed with test data
     - POST /api/admin/reset  → Clear all data
 
+
+### Seed or Reset Database
+- You can run migrations by using
+	- for initial create : `dotnet ef migrations add InitialCreate --project HotelBooking.Infrastructure --startup-project HotelBooking.API`
+	- for update database: `dotnet ef database update`
