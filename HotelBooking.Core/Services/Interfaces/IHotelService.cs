@@ -5,11 +5,11 @@ namespace HotelBooking.Core.Services.Interfaces
 {
     public interface IHotelService
     {
-        Task<IEnumerable<HotelResponse>> SearchAsync(string query);
+        Task<ServiceResponse<IEnumerable<HotelResponse>>> SearchAsync(string query);
 
-        Task<HotelResponse> GetAsync(int id);
+        Task<ServiceResponse<HotelResponse>> GetAsync(int id);
 
-        Task<int> SaveAsync(HotelResponse hotelDto);
+        Task<int> SaveAsync(string name);
 
     }
 }

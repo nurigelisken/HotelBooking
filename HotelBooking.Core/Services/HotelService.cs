@@ -15,36 +15,50 @@ namespace HotelBooking.Core.Services
             _hotelRepository = hotelRepository;
         }
 
-        public async Task<HotelResponse> GetAsync(int id)
+        public async Task<ServiceResponse<HotelResponse>> GetAsync(int id)
         {
             var hotelEntity = await _hotelRepository.GetAsync(id);
-            if(hotelEntity == null)
-                return new HotelResponse();
+            if (hotelEntity == null)
+            {
+                return new ServiceResponse<HotelResponse>
+                {
+                    Success = false,
+                    Message = "Hotel not found"
+                };
+            }
 
             var hotelDto = new HotelResponse { Id = id, Name = hotelEntity.Name };
-            return hotelDto;
+            return new ServiceResponse<HotelResponse>
+            {
+                Data = hotelDto
+            };
         }
 
-        public async Task<int> SaveAsync(HotelResponse hotelDto)
+        public async Task<int> SaveAsync(string name)
         {
-            var hotelEntity = new Hotel { Name = hotelDto.Name };
+            var hotelEntity = new Hotel { Name = name };
             return await _hotelRepository.SaveAsync(hotelEntity);
         }
 
-        public async Task<IEnumerable<HotelResponse>> SearchAsync(string query)
+        public async Task<ServiceResponse<IEnumerable<HotelResponse>>> SearchAsync(string query)
         {
             var hotelEntities = await _hotelRepository.SearchAsync(query);
-            var hotels = hotelEntities.Select(entity => new HotelResponse {
+            var hotels = hotelEntities.Select(entity => new HotelResponse
+            {
                 Id = entity.Id,
                 Name = entity.Name,
-                HotelRooms  = entity.HotelRooms.Select( hotelRoom => new HotelRoomResponse { 
-                    Id= hotelRoom.Id,
+                HotelRooms = entity.HotelRooms.Select(hotelRoom => new HotelRoomResponse
+                {
+                    Id = hotelRoom.Id,
                     Quantity = hotelRoom.Quantity,
                     RoomName = hotelRoom.Room.Name
                 }).ToList(),
             });
 
-            return hotels;
+            return new ServiceResponse<IEnumerable<HotelResponse>>
+            {
+                Data = hotels
+            };
         }
     }
 }

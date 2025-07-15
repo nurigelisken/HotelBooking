@@ -5,11 +5,11 @@ namespace HotelBooking.Core.Services.Interfaces
 {
     public interface IBookingService
     {
-        Task<BookingResponse> GetAsync(int id);
-        Task<BookingResponse> GetAsync(string bookingRef);
-        Task<IEnumerable<HotelRoomAvailabilityResponse>> GetHotelRoomAvailabilities(HotelRoomAvailabiltyRequest request);
+        Task<ServiceResponse<BookingResponse>> GetAsync(int id);
+        Task<ServiceResponse<BookingResponse>> GetAsync(string bookingRef);
+        Task<ServiceResponse<IEnumerable<HotelRoomAvailabilityResponse>>> GetHotelRoomAvailabilities(HotelRoomAvailabiltyRequest request);
 
-        Task<BookingResponse> SaveAsync(HotelRoomBookingRequest hotelRoomBookingRequest);
+        Task<ServiceResponse<BookingResponse>> SaveAsync(HotelRoomBookingRequest hotelRoomBookingRequest);
 
     }
 }

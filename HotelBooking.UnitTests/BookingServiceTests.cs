@@ -46,9 +46,9 @@ namespace HotelBooking.UnitTests
             var result = await _bookingService.GetAsync(1);
             // Assert
             result.Should().NotBeNull();
-            result.Id.Should().Be(1);
-            result.HotelName.Should().Be("Test Hotel");
-            result.RoomName.Should().Be("Deluxe Room");
+            result.Data.Id.Should().Be(1);
+            result.Data.HotelName.Should().Be("Test Hotel");
+            result.Data.RoomName.Should().Be("Deluxe Room");
         }
         [Fact]
         public async Task GetAsync_ShouldReturnEmptyResponse_WhenBookingDoesNotExist()
@@ -60,8 +60,8 @@ namespace HotelBooking.UnitTests
             var result = await _bookingService.GetAsync(999);
 
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(0);
+            result.Data?.Should().NotBeNull();
+            result.Data?.Id.Should().Be(0);
         }
         [Fact]
 
@@ -87,10 +87,10 @@ namespace HotelBooking.UnitTests
             var result = await _bookingService.GetAsync("REF123");
             // Assert
             result.Should().NotBeNull();
-            result.Id.Should().Be(1);
-            result.BookingRef.Should().Be("REF123");
-            result.HotelName.Should().Be("Test Hotel");
-            result.RoomName.Should().Be("Deluxe Room");
+            result.Data.Id.Should().Be(1);
+            result.Data.BookingRef.Should().Be("REF123");
+            result.Data.HotelName.Should().Be("Test Hotel");
+            result.Data.RoomName.Should().Be("Deluxe Room");
         }
 
         [Fact]
@@ -101,9 +101,9 @@ namespace HotelBooking.UnitTests
             // Act
             var result = await _bookingService.GetAsync("NON_EXISTENT_REF");
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(0);
-            result.BookingRef.Should().BeNullOrEmpty();
+            result.Data?.Should().NotBeNull();
+            result.Data?.Id.Should().Be(0);
+            result.Data?.BookingRef.Should().BeNullOrEmpty();
         }
 
         [Fact]
@@ -114,10 +114,10 @@ namespace HotelBooking.UnitTests
             // Act
             var result = await _bookingService.GetAsync(1);
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(0);
-            result.HotelName.Should().BeNullOrEmpty();
-            result.RoomName.Should().BeNullOrEmpty();
+            result.Data?.Should().NotBeNull();
+            result.Data?.Id.Should().Be(0);
+            result.Data?.HotelName.Should().BeNullOrEmpty();
+            result.Data?.RoomName.Should().BeNullOrEmpty();
 
         }
 
@@ -147,10 +147,10 @@ namespace HotelBooking.UnitTests
             // Act
             var result = await _bookingService.GetHotelRoomAvailabilities(request);
             // Assert
-            result.Should().NotBeNull();
-            result.Should().HaveCount(1);
-            result.First().HotelName.Should().Be("Test Hotel");
-            result.First().RoomName.Should().Be("Single Room");
+            result.Data.Should().NotBeNull();
+            result.Data.Should().HaveCount(1);
+            result.Data.First().HotelName.Should().Be("Test Hotel");
+            result.Data.First().RoomName.Should().Be("Single Room");
         }
 
 
@@ -165,9 +165,23 @@ namespace HotelBooking.UnitTests
                 CheckOutDate = DateTime.Now.AddDays(2),
                 NumberOfGuests = 3 // Exceeds room capacity
             };
-            
-            // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => _bookingService.SaveAsync(request));
+
+            var hotelRoom = new HotelRoom
+            {
+                Id = 1,
+                RoomId = 1,
+                HotelId = 1,
+                Quantity = 2,
+                Room = new Room { Capacity = 2 }
+            };
+            _hotelRepositoryMock.Setup(repo => repo.GetHotelRoomAsync(request.HotelRoomId)).ReturnsAsync(hotelRoom);
+            _roomRepositoryMock.Setup(repo => repo.GetAsync(hotelRoom.RoomId)).ReturnsAsync(hotelRoom.Room);
+
+            // Act
+            var result = await _bookingService.SaveAsync(request);
+
+            // Assert
+            result.Message.Should().Be($"Sorry, but this room is only available maximum for {hotelRoom.Room.Capacity} guests.");
         }
 
         [Fact]
@@ -193,9 +207,13 @@ namespace HotelBooking.UnitTests
             _hotelRepositoryMock.Setup(repo => repo.GetHotelRoomAsync(request.HotelRoomId)).ReturnsAsync(hotelRoom);
             _roomRepositoryMock.Setup(repo => repo.GetAsync(hotelRoom.RoomId)).ReturnsAsync(hotelRoom.Room);
             _bookingRepositoryMock.Setup(repo => repo.GetAsync(request.Id)).ReturnsAsync((Booking)null);
-            
-            // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => _bookingService.SaveAsync(request));
+
+
+            // Act
+            var result = await _bookingService.SaveAsync(request);
+
+            // Assert
+            result.Message.Should().Be("The booking you are looking for is not found.");
 
         }
 
@@ -233,10 +251,11 @@ namespace HotelBooking.UnitTests
             _roomRepositoryMock.Setup(repo => repo.GetAsync(hotelRoom.RoomId)).ReturnsAsync(hotelRoom.Room);
             _bookingRepositoryMock.Setup(repo => repo.GetAsync(request.Id)).ReturnsAsync(booking);
 
-            // Act & Assert
-            await new Func<Task>(() => _bookingService.SaveAsync(request))
-                .Should().ThrowAsync<Exception>()
-                .WithMessage("You cant update the room after the booking is confirmed.");
+            // Act
+            var result = await _bookingService.SaveAsync(request);
+
+            // Assert
+            result.Message.Should().Be("You cant update the room after the booking is confirmed.");
 
         }
     }

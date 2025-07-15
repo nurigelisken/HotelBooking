@@ -19,7 +19,7 @@ namespace HotelBooking.API.Controllers
 
         [HttpGet]
         [Route("search")]
-        public async Task<ActionResult<IEnumerable<HotelResponse>>> Search(string query)
+        public async Task<ActionResult<ServiceResponse<IEnumerable<HotelResponse>>>> Search(string query)
         {
             var hotels = await _hotelService.SearchAsync(query);
             return Ok(hotels);
@@ -27,16 +27,16 @@ namespace HotelBooking.API.Controllers
 
         [HttpGet]
         [Route("{id}", Name = "getHotel")]
-        public async Task<ActionResult<HotelResponse>> Get(int id)
+        public async Task<ActionResult<ServiceResponse<HotelResponse>>> Get(int id)
         {
             var hotel = await _hotelService.GetAsync(id);
             return Ok(hotel);
         }
 
         [HttpPost(Name = "save")]
-        public async Task<ActionResult<int>> Save(HotelResponse hotelDto)
+        public async Task<ActionResult<int>> Save([FromQuery] string name)
         {
-            return Ok(await _hotelService.SaveAsync(hotelDto));
+            return Ok(await _hotelService.SaveAsync(name));
         }
     }
 }
