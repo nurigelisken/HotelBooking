@@ -1,0 +1,52 @@
+## Build results
+bin/
+obj/
+out/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## VS Code
+.vscode/
+
+## Rider
+.idea/
+
+## OS generated files
+.DS_Store
+Thumbs.db
+
+## Dotnet watch/EF
+**/appsettings.*.json
+!**/appsettings.json
+*.db
+
+## Logs
+*.log
+logs/
+
+## NuGet
+*.nupkg
+.nuget/
+packages/
+
+## Test results
+TestResults/
+*.trx
+
+## Database
+*.mdf
+*.ldf
+
+## Web artifacts
+wwwroot/dist/
+wwwroot/node_modules/
+node_modules/
+dist/
+build/
+
+## Optional: Ignore secrets.json if used
+secrets.json
