@@ -19,7 +19,7 @@ It provides functionality to search for hotels, list available rooms, and make b
 - Entity Framework Core
 - SQL Server / InMemory
 - xUnit + Moq
-- Swagger (Swashbuckle)
+- Swagger
 
 ### Clone the Repository
 - Clone the repository to your local machine:
