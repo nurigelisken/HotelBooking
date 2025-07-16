@@ -22,7 +22,7 @@ namespace HotelBooking.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.Booking", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.Booking", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +53,7 @@ namespace HotelBooking.Infrastructure.Migrations
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.Hotel", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.Hotel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -87,7 +87,7 @@ namespace HotelBooking.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.HotelRoom", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.HotelRoom", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,54 +117,54 @@ namespace HotelBooking.Infrastructure.Migrations
                         {
                             Id = 1,
                             HotelId = 1,
-                            Quantity = 0,
+                            Quantity = 2,
                             RoomId = 1
                         },
                         new
                         {
                             Id = 2,
                             HotelId = 1,
-                            Quantity = 0,
+                            Quantity = 2,
                             RoomId = 2
                         },
                         new
                         {
                             Id = 3,
                             HotelId = 1,
-                            Quantity = 0,
+                            Quantity = 2,
                             RoomId = 3
                         },
                         new
                         {
                             Id = 4,
                             HotelId = 2,
-                            Quantity = 0,
+                            Quantity = 3,
                             RoomId = 1
                         },
                         new
                         {
                             Id = 5,
                             HotelId = 2,
-                            Quantity = 0,
+                            Quantity = 3,
                             RoomId = 2
                         },
                         new
                         {
                             Id = 6,
                             HotelId = 3,
-                            Quantity = 0,
+                            Quantity = 3,
                             RoomId = 1
                         },
                         new
                         {
                             Id = 7,
                             HotelId = 3,
-                            Quantity = 0,
+                            Quantity = 3,
                             RoomId = 3
                         });
                 });
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.Room", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.Room", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,9 +210,9 @@ namespace HotelBooking.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.Booking", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.Booking", b =>
                 {
-                    b.HasOne("HotelBooking.Core.Entities.HotelRoom", "HotelRoom")
+                    b.HasOne("HotelBooking.Infrastructure.Entities.HotelRoom", "HotelRoom")
                         .WithMany("Bookings")
                         .HasForeignKey("HotelRoomId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -221,15 +221,15 @@ namespace HotelBooking.Infrastructure.Migrations
                     b.Navigation("HotelRoom");
                 });
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.HotelRoom", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.HotelRoom", b =>
                 {
-                    b.HasOne("HotelBooking.Core.Entities.Hotel", "Hotel")
+                    b.HasOne("HotelBooking.Infrastructure.Entities.Hotel", "Hotel")
                         .WithMany("HotelRooms")
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HotelBooking.Core.Entities.Room", "Room")
+                    b.HasOne("HotelBooking.Infrastructure.Entities.Room", "Room")
                         .WithMany("HotelRooms")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -240,17 +240,17 @@ namespace HotelBooking.Infrastructure.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.Hotel", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.Hotel", b =>
                 {
                     b.Navigation("HotelRooms");
                 });
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.HotelRoom", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.HotelRoom", b =>
                 {
                     b.Navigation("Bookings");
                 });
 
-            modelBuilder.Entity("HotelBooking.Core.Entities.Room", b =>
+            modelBuilder.Entity("HotelBooking.Infrastructure.Entities.Room", b =>
                 {
                     b.Navigation("HotelRooms");
                 });
